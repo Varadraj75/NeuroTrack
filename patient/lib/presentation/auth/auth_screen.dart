@@ -11,7 +11,6 @@ import 'package:patient/presentation/widgets/snackbar_service.dart';
 import 'package:patient/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import '../widgets/welcome_header.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -25,8 +24,6 @@ class _AuthScreenState extends State<AuthScreen> {
   int _currentPage = 0;
   late Timer _timer;
   bool hasNavigated = false;
-  final supabase = Supabase.instance.client;
-  StreamSubscription<AuthState>? _authSubscription;
 
   final List<OnboardingContent> _contents = [
     OnboardingContent(
@@ -50,26 +47,6 @@ class _AuthScreenState extends State<AuthScreen> {
   void initState() {
     super.initState();
     _startAutoScroll();
-    _initializeAuthListener();
-  }
-
-  void _initializeAuthListener() {
-    _authSubscription = supabase.auth.onAuthStateChange.listen((data) {
-      final session = supabase.auth.currentSession;
-      if (session != null && mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _handleSuccessfulAuth(session);
-        });
-      }
-    });
-  }
-
-  void _handleSuccessfulAuth(Session session) {
-    final fullName = session.user.userMetadata?['full_name'];
-    final email = session.user.email ?? 'Unknown User';
-
-    SnackbarService.showSuccess('Signed in as ${fullName ?? email}');
-    context.read<AuthProvider>().checkIfPatientExists();
   }
 
   void _startAutoScroll() {
@@ -91,7 +68,6 @@ class _AuthScreenState extends State<AuthScreen> {
   void dispose() {
     _pageController.dispose();
     _timer.cancel();
-    _authSubscription?.cancel();
     super.dispose();
   }
 
@@ -104,9 +80,8 @@ class _AuthScreenState extends State<AuthScreen> {
       Widget? nextScreen;
 
       if (authProvider.authNavigationStatus.isHome) {
-        final userName =
-            supabase.auth.currentSession?.user.userMetadata?['full_name'];
-        nextScreen = HomeScreen(userName: userName ?? 'User');
+        final userName = 'Mock User';
+        nextScreen = HomeScreen(userName: userName);
       } else if (authProvider.authNavigationStatus.isPersonalDetails) {
         nextScreen = const PersonalDetailsScreen();
       } else if(authProvider.authNavigationStatus.isAssessment) {
@@ -165,8 +140,10 @@ class _AuthScreenState extends State<AuthScreen> {
                   left: 0,
                   right: 0,
                   child: GoogleSignInButton(
-                    onPressed: () =>
-                        context.read<AuthProvider>().signInWithGoogle(),
+                    onPressed: () {
+                      context.read<AuthProvider>().signInWithGoogle();
+                      context.read<AuthProvider>().checkIfPatientExists();
+                    },
                   ),
                 ),
               ],
@@ -184,11 +161,11 @@ class _AuthScreenState extends State<AuthScreen> {
         content.image.svg(height: 200),
         const SizedBox(height: 35),
         Text(
-          content.title,
+           content.title,
           style: GoogleFonts.poppins(
-            fontSize: 18,
+             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.blueAccent,
+             color: Colors.blueAccent,
           ),
         ),
         const SizedBox(height: 5),
@@ -198,7 +175,7 @@ class _AuthScreenState extends State<AuthScreen> {
             content.description,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 16,
+               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: Colors.black,
             ),
@@ -214,7 +191,7 @@ class _AuthScreenState extends State<AuthScreen> {
       duration: const Duration(milliseconds: 200),
       margin: const EdgeInsets.only(right: 5),
       height: 8,
-      width: 8,
+       width: 8,
       decoration: BoxDecoration(
         color: _currentPage == index ? Colors.blueAccent : Colors.grey.shade300,
         borderRadius: BorderRadius.circular(4),

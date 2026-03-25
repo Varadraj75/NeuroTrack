@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:therapist/presentation/auth/personal_details_screen.dart';
 import 'package:therapist/presentation/auth/widgets/google_signin_button.dart';
 import '../home/home_screen.dart';
@@ -20,45 +19,11 @@ class _AuthScreenState extends State<AuthScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   Timer? _timer;
-  final supabase = Supabase.instance.client;
-  StreamSubscription<AuthState>? _authSubscription;
 
   @override
   void initState() {
     super.initState();
     _startAutoScroll();
-    _initializeAuthListener();
-  }
-
-  void _initializeAuthListener() {
-    _authSubscription = supabase.auth.onAuthStateChange.listen((data) {
-      final session = data.session;
-      if (session != null && mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _handleSuccessfulAuth(session);
-        });
-      }
-    });
-  }
-
-  Future<void> _handleSuccessfulAuth(Session session) async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-    await authProvider.checkAuthentication();
-    final isNewUser = await authProvider.checkIfUserIsNew();
-
-    final fullName = session.user.userMetadata?['full_name'];
-    final email = session.user.email ?? 'Unknown User';
-  
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Signed in as ${fullName ?? email}'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-      authProvider.navigateBasedOnUserStatus(context);
-    }
   }
 
   void _startAutoScroll() {
@@ -80,7 +45,6 @@ class _AuthScreenState extends State<AuthScreen> {
   void dispose() {
     _timer?.cancel();
     _pageController.dispose();
-    _authSubscription?.cancel();
     super.dispose();
   }
 

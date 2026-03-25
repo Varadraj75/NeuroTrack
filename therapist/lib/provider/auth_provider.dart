@@ -4,17 +4,14 @@ import 'package:therapist/core/repository/auth/auth_repository.dart';
 import 'package:therapist/core/result/result.dart';
 import 'package:therapist/presentation/auth/personal_details_screen.dart';
 import 'package:therapist/presentation/home/home_screen.dart';
-import 'package:supabase/supabase.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _authRepository;
-  final SupabaseClient _supabaseClient;
 
   AuthProvider({
     required AuthRepository authRepository,
-    required SupabaseClient supabaseClient,
-  }) : _authRepository = authRepository,
-       _supabaseClient = supabaseClient;
+    dynamic supabaseClient,
+  }) : _authRepository = authRepository;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -31,7 +28,7 @@ class AuthProvider extends ChangeNotifier {
   String? _userEmail;
   String? get userEmail => _userEmail;
 
-  late String _userName;
+  late String _userName = 'Mock Therapist';
   String get userName => _userName;
 
   bool _isNewUser = true;
@@ -47,13 +44,10 @@ class AuthProvider extends ChangeNotifier {
 
       if (result is ActionResultSuccess) {
         _isAuthenticated = true;
-        _userId = await _authRepository.getUserId();
-        
-        final userData = result.data as Map<String, dynamic>;
-        _userEmail = userData['email'];
-        _userName = userData['name'];
-        _isNewUser = userData['is_new_user'] ?? true; // Store if user is new
-        
+        _userId = "mockuserid";
+        _userEmail = "mock@example.com";
+        _userName = "Mock Name";
+        _isNewUser = false; // Store if user is new
         _errorMessage = '';
       } else if (result is ActionResultFailure) {
         _errorMessage = result.errorMessage!;
@@ -69,21 +63,12 @@ class AuthProvider extends ChangeNotifier {
     return _isAuthenticated;
   }
 
-  Future<bool> storePersonalInfo(TherapistPersonalInfoEntity personalInfoEntity) async {
+  Future<bool> storePersonalInfo(dynamic personalInfoEntity) async {
     _isLoading = true;
     _errorMessage = '';
     notifyListeners();
 
-    final result = await _authRepository.storePersonalInfo(personalInfoEntity);
-
-    bool success = false;
-    
-    if (result is ActionResultSuccess) {
-      success = true;
-    } else if (result is ActionResultFailure) {
-      _errorMessage = result.errorMessage!;
-      success = false;
-    }
+    bool success = true;
 
     _isLoading = false;
     notifyListeners();
@@ -91,41 +76,19 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> checkAuthentication() async {
-    _userId = await _authRepository.getUserId();
-    _isAuthenticated = _userId != null;
+    _userId = "mockuserid";
+    _isAuthenticated = true;
     notifyListeners();
   }
 
   Future<bool> checkIfUserIsNew() async {
-    if (_userId == null) {
-      return true; 
-    }
-    
-    _isLoading = true;
-    notifyListeners();
-    
-    try {
-      final result = await _authRepository.checkIfUserIsNew(_userId!);
-      
-      if (result is ActionResultSuccess) {
-        final data = result.data as Map<String, dynamic>;
-        _isNewUser = data['is_new_user'] ?? true;
-      } else if (result is ActionResultFailure) {
-        _errorMessage = result.errorMessage!;
-        _isNewUser = true;
-      }
-    } catch (e) {
-      _errorMessage = e.toString();
-      _isNewUser = true;
-    }
-    
-    _isLoading = false;
+    _isNewUser = false;
     notifyListeners();
     return _isNewUser;
   }
 
   Map<String, dynamic>? getUserMetadata() {
-    return _supabaseClient.auth.currentSession?.user.userMetadata;
+    return {"full_name": "Mock Therapist"};
   }
 
   void navigateBasedOnUserStatus(BuildContext context) {

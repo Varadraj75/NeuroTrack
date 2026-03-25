@@ -84,36 +84,41 @@ class TherapyHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildHeader(context),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          spacing: 20,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 18,),
-            TherapyGoalHomeScreenOptionTile(
+        children: [
+          const SizedBox(height: 20,),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: TherapyGoalHomeScreenOptionTile(
               title: 'Tailored\nGoals',
               color: const Color(0xffF9F3E3),
               imagePath: 'assets/health_tracking.png',
               isLeading: false,
               onTap: () => _navigateToTailoredGoals(context, patientId),
             ),
-            TherapyGoalHomeScreenOptionTile(
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: TherapyGoalHomeScreenOptionTile(
               title: 'Daily\nActivities',
               color: const Color(0xffFEF4F0),
               imagePath: 'assets/daily_activities.png',
               isLeading: true,
               onTap: () => _navigateToDailyActivities(context, patientId),
             ),
-            TherapyGoalHomeScreenOptionTile(
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: TherapyGoalHomeScreenOptionTile(
               title: 'Development\nMilestones',
               color: const Color(0xffF5FAF4),
               imagePath: 'assets/development_milestones.png',
               isLeading: false,
               onTap: () => _navigateToDevelopmentMilestones(context),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -3,7 +3,6 @@ import 'package:patient/core/core.dart';
 import 'package:patient/core/repository/auth/auth.dart';
 import 'package:patient/model/patient_models/patient_models.dart';
 import 'package:patient/presentation/appointments/models/appointment_model.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppointmentsProvider extends ChangeNotifier {
 
@@ -76,56 +75,10 @@ class AppointmentsProvider extends ChangeNotifier {
     _availableTimeSlots = [];
     notifyListeners();
     try {
-      final supabase = Supabase.instance.client;
-      final currentUser = supabase.auth.currentUser;
-      if (currentUser == null) {
-        availableTimeSlots = [];
-        return;
-      }
-      final userId = currentUser.id;
-
-      final patientRow = await supabase
-          .from('patient')
-          .select('therapist_id')
-          .eq('id', userId)
-          .maybeSingle();
-
       if (token != _fetchToken) return;
-
-      var therapistId = patientRow?['therapist_id'] as String?;
-
-      if (therapistId == null || therapistId.isEmpty) {
-        final sessionRow = await supabase
-            .from('session')
-            .select('therapist_id')
-            .eq('patient_id', userId)
-            .eq('status', 'accepted')
-            .order('timestamp', ascending: false)
-            .limit(1)
-            .maybeSingle();
-
-        if (token != _fetchToken) return;
-        therapistId = sessionRow?['therapist_id'] as String?;
-      }
-
-      if (therapistId == null || therapistId.isEmpty) {
-        availableTimeSlots = [];
-        return;
-      }
-
-      final therapistRow = await supabase
-          .from('therapist')
-          .select('start_availability_time, end_availability_time')
-          .eq('id', therapistId)
-          .maybeSingle();
-
-      if (token != _fetchToken) return;
-
-      final startTime = therapistRow?['start_availability_time'] as String? ?? '9:00';
-      final endTime = therapistRow?['end_availability_time'] as String? ?? '18:00';
-
+      // Stub implementation: fetch mock slots
       final result = await _authRepository.getAvailableBookingSlotsForTherapist(
-        therapistId, date, startTime, endTime);
+        'mock_therapist_id', date, '9:00', '18:00');
 
       if (token != _fetchToken) return;
 
@@ -135,7 +88,6 @@ class AppointmentsProvider extends ChangeNotifier {
         availableTimeSlots = [];
       }
     } catch(e) {
-      print(e);
       if (token == _fetchToken) {
         availableTimeSlots = [];
       }
@@ -176,7 +128,7 @@ class AppointmentsProvider extends ChangeNotifier {
   Future<bool> createAppointment() async {
     try {
       final appointmentModel = PatientScheduleAppointmentModel(
-        patientId: Supabase.instance.client.auth.currentUser!.id,
+        patientId: 'mock_patient_id',
         therapistId: '', 
         serviceType: _selectedService, 
         date: _selectedDate!.toIso8601String(),
@@ -193,7 +145,6 @@ class AppointmentsProvider extends ChangeNotifier {
         return false;
       }
     } catch(e) {
-      print(e);
       return false;
     } finally {
       fetchAllAppointments();

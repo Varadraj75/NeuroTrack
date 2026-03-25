@@ -2,13 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:patient/presentation/result/book_appointment.dart';
 import 'package:patient/presentation/result/widgets/buildresult.dart';  // Import the widgets file
 
-// Initialize Supabase Client
-final supabase = Supabase.instance.client;
-
+// Initialize without Supabase
 class ResultScreen extends StatefulWidget {
   final List<Map<String, String>> responses;
   final String patientId;

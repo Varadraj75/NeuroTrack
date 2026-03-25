@@ -1,6 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 // ignore_for_file: type=lint
+// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -22,14 +24,21 @@ class AssessmentOptionModelMapper
   final String id = 'AssessmentOptionModel';
 
   static String _$optionId(AssessmentOptionModel v) => v.optionId;
-  static const Field<AssessmentOptionModel, String> _f$optionId =
-      Field('optionId', _$optionId, key: r'option_id');
+  static const Field<AssessmentOptionModel, String> _f$optionId = Field(
+    'optionId',
+    _$optionId,
+    key: r'option_id',
+  );
   static String _$text(AssessmentOptionModel v) => v.text;
-  static const Field<AssessmentOptionModel, String> _f$text =
-      Field('text', _$text);
+  static const Field<AssessmentOptionModel, String> _f$text = Field(
+    'text',
+    _$text,
+  );
   static int _$score(AssessmentOptionModel v) => v.score;
-  static const Field<AssessmentOptionModel, int> _f$score =
-      Field('score', _$score);
+  static const Field<AssessmentOptionModel, int> _f$score = Field(
+    'score',
+    _$score,
+  );
 
   @override
   final MappableFields<AssessmentOptionModel> fields = const {
@@ -40,9 +49,10 @@ class AssessmentOptionModelMapper
 
   static AssessmentOptionModel _instantiate(DecodingData data) {
     return AssessmentOptionModel(
-        optionId: data.dec(_f$optionId),
-        text: data.dec(_f$text),
-        score: data.dec(_f$score));
+      optionId: data.dec(_f$optionId),
+      text: data.dec(_f$text),
+      score: data.dec(_f$score),
+    );
   }
 
   @override
@@ -68,43 +78,57 @@ mixin AssessmentOptionModelMappable {
         .encodeMap<AssessmentOptionModel>(this as AssessmentOptionModel);
   }
 
-  AssessmentOptionModelCopyWith<AssessmentOptionModel, AssessmentOptionModel,
-          AssessmentOptionModel>
-      get copyWith => _AssessmentOptionModelCopyWithImpl(
-          this as AssessmentOptionModel, $identity, $identity);
+  AssessmentOptionModelCopyWith<
+    AssessmentOptionModel,
+    AssessmentOptionModel,
+    AssessmentOptionModel
+  >
+  get copyWith =>
+      _AssessmentOptionModelCopyWithImpl<
+        AssessmentOptionModel,
+        AssessmentOptionModel
+      >(this as AssessmentOptionModel, $identity, $identity);
   @override
   String toString() {
-    return AssessmentOptionModelMapper.ensureInitialized()
-        .stringifyValue(this as AssessmentOptionModel);
+    return AssessmentOptionModelMapper.ensureInitialized().stringifyValue(
+      this as AssessmentOptionModel,
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return AssessmentOptionModelMapper.ensureInitialized()
-        .equalsValue(this as AssessmentOptionModel, other);
+    return AssessmentOptionModelMapper.ensureInitialized().equalsValue(
+      this as AssessmentOptionModel,
+      other,
+    );
   }
 
   @override
   int get hashCode {
-    return AssessmentOptionModelMapper.ensureInitialized()
-        .hashValue(this as AssessmentOptionModel);
+    return AssessmentOptionModelMapper.ensureInitialized().hashValue(
+      this as AssessmentOptionModel,
+    );
   }
 }
 
 extension AssessmentOptionModelValueCopy<$R, $Out>
     on ObjectCopyWith<$R, AssessmentOptionModel, $Out> {
   AssessmentOptionModelCopyWith<$R, AssessmentOptionModel, $Out>
-      get $asAssessmentOptionModel =>
-          $base.as((v, t, t2) => _AssessmentOptionModelCopyWithImpl(v, t, t2));
+  get $asAssessmentOptionModel => $base.as(
+    (v, t, t2) => _AssessmentOptionModelCopyWithImpl<$R, $Out>(v, t, t2),
+  );
 }
 
 abstract class AssessmentOptionModelCopyWith<
-    $R,
-    $In extends AssessmentOptionModel,
-    $Out> implements ClassCopyWith<$R, $In, $Out> {
+  $R,
+  $In extends AssessmentOptionModel,
+  $Out
+>
+    implements ClassCopyWith<$R, $In, $Out> {
   $R call({String? optionId, String? text, int? score});
   AssessmentOptionModelCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-      Then<$Out2, $R2> t);
+    Then<$Out2, $R2> t,
+  );
 }
 
 class _AssessmentOptionModelCopyWithImpl<$R, $Out>
@@ -116,20 +140,23 @@ class _AssessmentOptionModelCopyWithImpl<$R, $Out>
   late final ClassMapperBase<AssessmentOptionModel> $mapper =
       AssessmentOptionModelMapper.ensureInitialized();
   @override
-  $R call({String? optionId, String? text, int? score}) =>
-      $apply(FieldCopyWithData({
-        if (optionId != null) #optionId: optionId,
-        if (text != null) #text: text,
-        if (score != null) #score: score
-      }));
+  $R call({String? optionId, String? text, int? score}) => $apply(
+    FieldCopyWithData({
+      if (optionId != null) #optionId: optionId,
+      if (text != null) #text: text,
+      if (score != null) #score: score,
+    }),
+  );
   @override
   AssessmentOptionModel $make(CopyWithData data) => AssessmentOptionModel(
-      optionId: data.get(#optionId, or: $value.optionId),
-      text: data.get(#text, or: $value.text),
-      score: data.get(#score, or: $value.score));
+    optionId: data.get(#optionId, or: $value.optionId),
+    text: data.get(#text, or: $value.text),
+    score: data.get(#score, or: $value.score),
+  );
 
   @override
   AssessmentOptionModelCopyWith<$R2, AssessmentOptionModel, $Out2>
-      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-          _AssessmentOptionModelCopyWithImpl($value, $cast, t);
+  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _AssessmentOptionModelCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
+

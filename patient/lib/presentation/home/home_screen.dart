@@ -9,6 +9,7 @@ import 'package:patient/presentation/operations/therapy_goals.dart';
 import 'package:patient/presentation/reports/report_screen.dart'; // Import the new widget
 import 'package:patient/presentation/notification/updates_screen.dart';
 import 'package:patient/presentation/games/games_screen.dart';
+import 'package:patient/presentation/profile/profile_screen.dart';
 
 import '../../gen/assets.gen.dart';
 
@@ -211,7 +212,6 @@ class _HomeScreenState extends State<HomeScreen> {
   // Other screen dummy content
 
   Widget _buildProfileContent() {
-    return const Center(
-        child: Text('Profile Screen', style: TextStyle(fontSize: 24)));
+    return const ProfileScreen();
   }
 }

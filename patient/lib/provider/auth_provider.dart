@@ -1,16 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:patient/core/repository/auth/auth.dart';
 import 'package:patient/core/utils/utils.dart';
 import 'package:patient/model/auth_models/auth_model.dart';
 import 'package:patient/model/auth_models/personal_info_model.dart';
 import 'package:patient/model/auth_models/therapist_model.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../core/result/result.dart';
 
 
@@ -45,8 +39,6 @@ class AuthProvider extends ChangeNotifier {
   String _apiErrorMessage = '';
   String get apiErrorMessage => _apiErrorMessage;
 
-  final supabase = Supabase.instance.client;
-
   AuthNavigationStatus _authNavigationStatus = AuthNavigationStatus.unknown;
   AuthNavigationStatus get authNavigationStatus => _authNavigationStatus;
 
@@ -70,59 +62,12 @@ class AuthProvider extends ChangeNotifier {
   ApiStatus get bookConsulationStatus => _bookConsulationStatus;
 
   Future<void> signInWithGoogle() async {
-    try {
-      if (kIsWeb) {
-        await _handleWebSignIn();
-      } else {
-        await _handleMobileSignIn();
-      }
-    } catch (error) {
-      throw Exception('Sign in failed: $error');
-    }
-  }
-
-  Future<void> _handleWebSignIn() async {
-    final supabaseUrl = dotenv.env['SUPABASE_URL'] ??
-        (throw Exception("Supabase URL not found in .env"));
-
-    await supabase.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: "$supabaseUrl/auth/v1/callback",
-      authScreenLaunchMode: LaunchMode.platformDefault,
-    );
-  }
-
-  Future<void> _handleMobileSignIn() async {
-    final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ??
-        (throw Exception("WEB_CLIENT_ID not found in .env"));
-    final iosClientId = dotenv.env['GOOGLE_IOS_CLIENT_ID'];
-    
-    final GoogleSignIn googleSignIn = GoogleSignIn(
-      clientId: Platform.isIOS ? iosClientId : null,
-      serverClientId: webClientId,
-      scopes: ['email', 'profile'],
-    );
-
-    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser == null) throw 'Sign in cancelled';
-
-    final GoogleSignInAuthentication googleAuth = 
-        await googleUser.authentication;
-
-    if (googleAuth.idToken == null) throw 'No ID Token found';
-    if (googleAuth.accessToken == null) throw 'No Access Token found';
-
-    await supabase.auth.signInWithIdToken(
-      provider: OAuthProvider.google,
-      idToken: googleAuth.idToken!,
-      accessToken: googleAuth.accessToken,
-    );
+    // We mock login straight to checking patient exists.
+    await checkIfPatientExists(); 
   }
 
   String? getFullName() {
-    final session = supabase.auth.currentSession;
-    if (session == null) return null;
-    return session.user.userMetadata?['full_name'] ?? 'User';
+    return 'User';
   }
 
   Future<void> checkIfPatientExists() async {
@@ -172,7 +117,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void storePatientPersonalInfo(PersonalInfoModel personalInfoModel) async {
     _apiStatus = ApiStatus.initial;
     _apiErrorMessage = '';
@@ -180,11 +124,12 @@ class AuthProvider extends ChangeNotifier {
     final ActionResult result = await _authRepository.storePersonalInfo(personalInfoModel.toEntity());
     if(result is ActionResultSuccess) {
       _apiStatus = ApiStatus.success;
+      await checkIfPatientExists();
     } else {
       _apiStatus = ApiStatus.failure;
       _apiErrorMessage = result.errorMessage ?? 'An error occurred. Please try again.';
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   void getAllTherapist() async {
@@ -198,8 +143,8 @@ class AuthProvider extends ChangeNotifier {
       } else {
         _apiStatus = ApiStatus.failure;
         _apiErrorMessage = result.errorMessage ?? 'An error occurred. Please try again.';
-        notifyListeners();
       }
+      notifyListeners();
   }
 
   void getAvailableBookingSlotsForTherapist(
@@ -208,26 +153,29 @@ class AuthProvider extends ChangeNotifier {
     _availableBookingSlotsStatus = ApiStatus.initial;
     _availableBookingSlots = [];
     notifyListeners();
-    final therapistData = therapistList.firstWhere((element) => element.id == therapistId);
-    final ActionResult result = await _authRepository.getAvailableBookingSlotsForTherapist(
-      therapistId,
-      date,
-      therapistData.startAvailabilityTime,
-      therapistData.endAvailabilityTime,
-    );
+    try {
+      final therapistData = therapistList.firstWhere((element) => element.id == therapistId);
+      final ActionResult result = await _authRepository.getAvailableBookingSlotsForTherapist(
+        therapistId,
+        date,
+        therapistData.startAvailabilityTime,
+        therapistData.endAvailabilityTime,
+      );
       if(result is ActionResultSuccess) {
         _availableBookingSlots = result.data as List<String>;
         _availableBookingSlotsStatus = ApiStatus.success;
-        notifyListeners();
       } else {
         _availableBookingSlotsStatus = ApiStatus.failure;
-        notifyListeners();
       }
+    } catch(e) {
+      _availableBookingSlotsStatus = ApiStatus.failure;
+    }
+    notifyListeners();
   }
 
   void bookConsultation(String therapistId, DateTime date, int index) async  {
     final consultationModel = ConsultationRequestModel(
-      timestamp: _updateTime(date, availableBookingSlots[index]),
+      timestamp: _updateTime(date, availableBookingSlots.isNotEmpty ? availableBookingSlots[index] : '10:00 AM'),
       therapistId: therapistId,
       isConsultation: true,
       duration: 30,
@@ -235,28 +183,27 @@ class AuthProvider extends ChangeNotifier {
     );
 
     _bookConsulationStatus = ApiStatus.initial;
-
     notifyListeners();
 
     final ActionResult result = await _authRepository.bookConsultation(consultationModel.toEntity());
 
     if(result is ActionResultSuccess) {
       _bookConsulationStatus = ApiStatus.success;
-      notifyListeners();
+      await checkIfPatientExists();
     } else {
       _bookConsulationStatus = ApiStatus.failure;
-      notifyListeners();
     }
+    notifyListeners();
   }
 
  DateTime _updateTime(DateTime date, String timeStr) {
     final timeParts = timeStr.split(' ');
     final time = timeParts[0];
-    final period = timeParts[1].toUpperCase();
+    final period = timeParts.length > 1 ? timeParts[1].toUpperCase() : 'AM';
 
     final parts = time.split(':');
     int hour = int.parse(parts[0]);
-    final minute = int.parse(parts[1]);
+    final minute = parts.length > 1 ? int.parse(parts[1]) : 0;
 
     if (period == 'PM' && hour != 12) {
       hour += 12;
