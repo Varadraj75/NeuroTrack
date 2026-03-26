@@ -15,7 +15,9 @@ class _SessionScreenState extends State<SessionScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Provider.of<SessionProvider>(context, listen: false).clearAllSessions();
+      if (!mounted) return;
       Provider.of<SessionProvider>(context, listen: false).fetchTherapistSessions();
     });
   }

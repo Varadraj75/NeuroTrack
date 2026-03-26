@@ -26,7 +26,11 @@ class TherapyGoalsProvider extends ChangeNotifier {
     final result = await _patientRepository.getTherapyGoals(date: date);
 
     if (result is ActionResultSuccess) {
-      _therapyGoal = result.data as TherapyGoalModel;
+      if (result.data != null) {
+          _therapyGoal = result.data as TherapyGoalModel;
+      } else {
+          _therapyGoal = null;
+      }
       _apiStatus = ApiStatus.success;
       notifyListeners();
     } else {

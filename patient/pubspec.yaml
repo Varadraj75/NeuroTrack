@@ -70,13 +70,14 @@ dependencies:
   flutter_svg: ^2.0.17
   vector_graphics: ^1.1.18
   dotted_border: ^2.1.0
-  uuid: ^4.5.1
+  uuid: ^3.0.6
   get_it: ^8.2.0
   rxdart: ^0.28.0
   drift: ^2.32.1
   sqlite3_flutter_libs: ^0.6.0+eol
   path_provider: ^2.1.5
   path: ^1.9.1
+  flutter_gundb: ^0.0.3
 
 dev_dependencies:
   flutter_test:

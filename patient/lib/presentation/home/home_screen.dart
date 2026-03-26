@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:patient/core/theme/theme.dart';
+import 'package:patient/core/gundb/gun_sync_service.dart';
 import 'package:patient/presentation/activities/daily_activities_screen.dart';
 import 'package:patient/presentation/appointments/appointment_list_screen.dart';
 import 'package:patient/presentation/chatbot/chatbot_screen.dart';
@@ -134,6 +135,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Assets.icons.icChatbot.svg(),
               ),
             ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              // Direct GunDB Broadcast Test 
+              await PatientGunSyncService().broadcastSessionBooking('user123', {
+                 'id': 'test-${DateTime.now().millisecondsSinceEpoch}',
+                 'patientId': 'patient-apple',
+                 'therapistId': 'user123',
+                 'durationMinutes': 30,
+                 'scheduledTime': DateTime.now().toIso8601String(),
+                 'status': 'requested',
+              });
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Test broadcast complete!')));
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+            child: const Text('TEST GunDB BOOKING', style: TextStyle(color: Colors.white)),
           ),
           Expanded(
             child: ListView(

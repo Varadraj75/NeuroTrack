@@ -62,9 +62,8 @@ class ResultWidgets {
                       ),
                       child: CircleAvatar(
                         radius: 32,
-                        backgroundImage: NetworkImage(
-                          therapist["avatar_url"] ?? "https://via.placeholder.com/50",
-                        ),
+                        backgroundColor: Colors.grey.shade200,
+                        child: Icon(Icons.person, size: 40, color: Colors.grey.shade400),
                       ),
                     ),
                     Positioned(

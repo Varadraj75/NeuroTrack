@@ -22,8 +22,16 @@ import 'provider/daily_activities_provider.dart';
 import 'provider/home_provider.dart';
 import 'provider/therapist_provider.dart';
 
+import 'package:therapist/core/gundb/gun_sync_service.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await TherapistGunSyncService().init();
+    TherapistGunSyncService().listenForNewSessions('user123'); // Example mock initialization
+  } catch (e) {
+    print("FATAL GunDB Init Error: $e");
+  }
   await dotenv.load(fileName: ".env");
 
   SystemChrome.setSystemUIOverlayStyle(

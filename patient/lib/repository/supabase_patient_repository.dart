@@ -7,13 +7,28 @@ import 'package:patient/model/therapy_models/therapy_models.dart';
 import 'package:patient/core/local_db/app_database.dart';
 import 'package:drift/drift.dart' as drift;
 
+import 'package:patient/core/gundb/gun_sync_service.dart';
+import 'package:uuid/uuid.dart';
+
 class SupabasePatientRepository implements PatientRepository {
   SupabasePatientRepository({dynamic supabaseClient});
 
   @override
   Future<ActionResult> scheduleAppointment(PatientScheduleAppointmentEntity entity) async {
      try {
-       // Mock the schedule table storing for now to keep interface unbroken
+       final sessionId = Uuid().v4();
+
+       final sessionJson = {
+         'id': sessionId,
+         'patientId': entity.patientId,
+         'therapistId': entity.therapistId,
+         'scheduledTime': entity.timestamp.toIso8601String(),
+         'durationMinutes': entity.duration,
+         'status': 'pending',
+       };
+
+       PatientGunSyncService().broadcastSessionBooking(entity.therapistId, sessionJson);
+
        return ActionResultSuccess(data: 'scheduled', statusCode: 200);
      } catch (e) {
       return ActionResultFailure(errorMessage: e.toString(), statusCode: 500);

@@ -33,7 +33,6 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
     {
       "name": "Dr. John Doe",
       "specialisation": "Neurologist",
-      "avatar_url": "https://via.placeholder.com/150",
       "experience": "10 years",
       "rating": 4.8,
       "availability": "Today at 14:30",
@@ -43,7 +42,6 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
     {
       "name": "Dr. Jane Smith",
       "specialisation": "Psychiatrist",
-      "avatar_url": "https://via.placeholder.com/150",
       "experience": "8 years",
       "rating": 4.7,
       "availability": "Tomorrow at 10:00",
@@ -53,7 +51,6 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
     {
       "name": "Dr. Emily Brown",
       "specialisation": "Child Psychologist",
-      "avatar_url": "https://via.placeholder.com/150",
       "experience": "12 years",
       "rating": 4.9,
       "availability": "Today at 16:45",

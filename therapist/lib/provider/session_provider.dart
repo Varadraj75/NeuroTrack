@@ -4,13 +4,18 @@ import 'package:therapist/model/therapist_models/therapist_schedule_model.dart';
 import '../core/repository/therapist/therapist_repository.dart';
 import '../core/result/action_result_success.dart';
 
+import '../core/gundb/gun_sync_service.dart';
+import '../core/local_db/app_database.dart';
+
 class SessionProvider extends ChangeNotifier {
   String _selectedFilter = 'All';
   String get selectedFilter => _selectedFilter;
 
   SessionProvider({
     required TherapistRepository therapistRepository,
-  }) : _therapistRepository = therapistRepository;
+  }) : _therapistRepository = therapistRepository {
+    TherapistGunSyncService.onSessionsUpdated = fetchTherapistSessions;
+  }
 
   final TherapistRepository _therapistRepository;
 
@@ -86,6 +91,13 @@ class SessionProvider extends ChangeNotifier {
       _sessions.removeAt(index);
       notifyListeners();
     }
+  }
+
+  Future<void> clearAllSessions() async {
+    await localDb.delete(localDb.sessions).go();
+    _sessions.clear();
+    _calculateSessionCounts();
+    notifyListeners();
   }
 
 

@@ -21,8 +21,11 @@ import 'provider/therapy_goals_provider.dart';
 
 
 
+import 'package:patient/core/gundb/gun_sync_service.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await PatientGunSyncService().init();
   await dotenv.load(fileName: ".env");
   
    // Add your Gemini API key here

@@ -18,7 +18,7 @@ class SupabaseAssessmentsRepository implements AssessmentsRepository {
       description: 'A basic assessment required before starting.',
       category: 'General',
       cutoffScore: 50,
-      imageUrl: 'https://via.placeholder.com/150',
+      imageUrl: '',
       questions: [
         AssessmentQuestionModel(
           questionId: 'q1',
