@@ -128,14 +128,6 @@ Broadcast server running on ws://localhost:8765
 cd patient
 ```
 
-Create a `.env` file in the `patient/` directory:
-```env
-SUPABASE_URL=your_project_url
-SUPABASE_ANON_KEY=your_anon_key
-GOOGLE_WEB_CLIENT_ID=your_web_client_id
-GOOGLE_SECRET_KEY=your_secret_key
-```
-
 Install dependencies and run:
 ```bash
 flutter pub get
@@ -147,8 +139,6 @@ flutter run
 ```bash
 cd therapist
 ```
-
-Create a `.env` file in the `therapist/` directory with the same keys as above.
 
 Install dependencies and run:
 ```bash
